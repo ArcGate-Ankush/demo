@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <link rel="stylesheet" href="../static/css/login.css" />
+    <script src="../static/js/login.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <h1>DemoApp</h1>
+        </div>
+        <div class="nav-content">
+          <ul>
+            <li><a href="{{ url_for('login') }}">Home</a></li>
+            <li><a href="">About Us</a></li>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="">Sign Up</a></li>
+          </ul>
+        </div>
+        <div class="search-bar">
+          <input
+            type="search"
+            name="serachbar"
+            id="searchbar"
+            placeholder="Enter to search"
+          />
+          <input type="button" value="Search" id="search-button" />
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <div class="alert">
+        {% with messages = get_flashed_messages(with_categories =true) %}
+         {% if messages %}
+        <ul>
+          {% for category,message in messages %}
+          <li class="{{ category }} flashes">{{ message }} 
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+      </div>
+      <div class="card">
+        <h1 class="card-heading">Login Form</h1>
+
+        <div class="card-content">
+          <form action="" method="post">
+            <div class="form-group">
+              <div class="form-item">
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  placeholder="Enter Username"
+                  required
+                  autofocus
+                />
+              </div>
+
+              <div class="form-item login-button">
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Enter Password"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <input type="checkbox" name="remember" id="remember" />
+                <span>Remember Me</span>
+              </div>
+
+              <div class="form-item">
+                <input type="submit" value="Login" onclick="loginForm()" />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

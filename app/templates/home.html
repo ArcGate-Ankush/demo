@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="../static/css/home.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+          <div class="logo">
+            <h1>DemoApp</h1>
+          </div>
+          <div class="nav-content">
+            <ul>
+              <li><a href="">Home</a></li>
+              <li><a href="">About Us</a></li>
+              <li><a href="./home.html">Login</a></li>
+              <li><a href="">Sign Up</a></li>
+            </ul>
+          </div>
+          <div class="search-bar">
+            <input
+              type="search"
+              name="serachbar"
+              id="searchbar"
+              placeholder="Enter to search"
+            />
+            <input type="button" value="Search" id="search-button" />
+          </div>
+        </nav>
+      </header>
+
+      <main class="container">
+        <div class="logout-block">
+          <form action="{{url_for('logout')}}" method="post">
+            <span>Click to logout</span>
+            <input type="submit" value="Logout">
+          </form>  
+          
+
+        </div>
+        
+      </main>
+</body>
+</html>
