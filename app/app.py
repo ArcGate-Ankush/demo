@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pickle import NONE
 from flask import Flask, make_response, render_template, request, redirect, flash, url_for, jsonify
 import base64  # it is used to encode and decode data
 import requests
@@ -32,22 +33,23 @@ def login():
             #  make_response is used to send custom headers as well as changing the property.
             response_value = make_response(redirect(login_url))
             response_value.set_cookie('SESSION_TOKEN_COOKIE_NAME', '',
-                                    expires=0)
+                                      expires=0)
             response_value.set_cookie('SESSION_EMAIL', '',
-                             expires=0)
+                                      expires=0)
             # return redirect(login_url)
             return response_value, 301
         else:
             flash("Username  or Password is incorrect.", 'error')
             return redirect(url_for('login'))
-    cookies_session_token = request.cookies.get('SESSION_TOKEN_COOKIE_NAME', None)
+    cookies_session_token = request.cookies.get(
+        'SESSION_TOKEN_COOKIE_NAME', None)
     if cookies_session_token and onelogin_data['session_token_cookie_name'] == cookies_session_token:
         b64_encodeed_string = base64.b64encode(bytearray(
             f'{ONELOGIN_CLIENT_ID}:{ONELOGIN_CLIENT_SECRET}', 'utf-8')).decode('utf-8')
 
         headers = {'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': f'Basic {b64_encodeed_string}'
-                    }
+                   'Authorization': f'Basic {b64_encodeed_string}'
+                   }
         if datetime.utcnow() < onelogin_data['session_expiration']:
             endpoint = f'https://{ONELOGIN_SUBDOMAIN_URL}.onelogin.com/oidc/2/token/introspection'
             data = {
@@ -77,12 +79,12 @@ def login():
                 onelogin_data['session_expiration'] = expire_date
                 response_make = make_response(redirect(url_for('home')))
                 response_make.set_cookie('SESSION_TOKEN_COOKIE_NAME', session_token,
-                                            expires=expire_date, secure=True)
+                                         expires=expire_date, secure=True)
                 response_make.set_cookie('SESSION_EMAIL', onelogin_data['email'],
-                                            expires=expire_date, secure=True)
+                                         expires=expire_date, secure=True)
 
                 return response_make, 301
-    
+
     return render_template('login.html')
 
 
@@ -140,7 +142,8 @@ def oidcCallback():
                                              expires=expire_date, secure=True)
                     return response_make
                 else:
-                    flash('Name not exist. Please try again with other name or contact to admin', 'error')
+                    flash(
+                        'Name not exist. Please try again with other name or contact to admin', 'error')
                     return redirect('logout')
             else:
                 flash(user_info_response_data['error_description'], 'error')
@@ -155,27 +158,27 @@ def oidcCallback():
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    cookies_session_token = request.cookies.get(
+        'SESSION_TOKEN_COOKIE_NAME', None)
+    cookies_session_email = request.cookies.get('SESSION_EMAIL', None)
+    if(not cookies_session_token and not cookies_session_email):
+        return redirect(url_for('logout'))
+    return make_response(render_template('home.html'))
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logout_url = f"https://{ONELOGIN_SUBDOMAIN_URL}.onelogin.com/oidc/2/logout?post_logout_redirect_uri=http://127.0.0.1:5000&id_token_hint={onelogin_data['id_token']}"
-    response_make = make_response(redirect(logout_url))
-    response_make.set_cookie('SESSION_TOKEN_COOKIE_NAME', '',
-                             expires=0)
-    response_make.set_cookie('SESSION_EMAIL', '',
-                             expires=0)
+    # response_make = make_response(redirect(logout_url))
     onelogin_data['id_token'] = ''
     onelogin_data['access_token'] = ''
     onelogin_data['refresh_token'] = ''
-    onelogin_data['email']=''
-    onelogin_data['code']=''
-    onelogin_data['name']=''
-    onelogin_data['session_expiration']=''
-    onelogin_data['session_token_cookie_name']=''
-
-    return response_make ,200
+    # onelogin_data['email']=''
+    # onelogin_data['code']=''
+    # onelogin_data['name']=''
+    # onelogin_data['session_expiration']=''
+    # onelogin_data['session_token_cookie_name']=''
+    return redirect(logout_url)
 
 
 if __name__ == '__main__':
