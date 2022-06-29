@@ -162,6 +162,8 @@ def home():
         'SESSION_TOKEN_COOKIE_NAME', None)
     cookies_session_email = request.cookies.get('SESSION_EMAIL', None)
     if(not cookies_session_token and not cookies_session_email):
+        if(onelogin_data['id_token']=='' and onelogin_data['access_token']=='' and onelogin_data['refresh_token']==''):
+            return redirect(url_for('login'))
         return redirect(url_for('logout'))
     return make_response(render_template('home.html'))
 
@@ -173,12 +175,16 @@ def logout():
     onelogin_data['id_token'] = ''
     onelogin_data['access_token'] = ''
     onelogin_data['refresh_token'] = ''
+    res = make_response(redirect(logout_url))
+    res.set_cookie('SESSION_TOKEN_COOKIE_NAME', '',
+                                      expires=0)
+    res.set_cookie('SESSION_EMAIL', '', expires=0)
     # onelogin_data['email']=''
     # onelogin_data['code']=''
     # onelogin_data['name']=''
     # onelogin_data['session_expiration']=''
     # onelogin_data['session_token_cookie_name']=''
-    return redirect(logout_url)
+    return res
 
 
 if __name__ == '__main__':
